@@ -106,6 +106,25 @@ input[type=number]:focus{outline:none;border-color:#3b82f6}
 .wleg-dot{width:16px;height:4px;border-radius:2px;flex-shrink:0}
 .step-num-badge{display:inline-block;background:#1e3a5f;color:#7dd3fc;border-radius:12px;padding:1px 8px;font-size:11px;font-weight:700;margin-right:6px}
 @media(max-width:480px){.card-grid{grid-template-columns:1fr}}
+
+.orient-section{background:#0d1826;border:1px solid #1e3a5f;border-radius:10px;padding:12px;margin-bottom:12px}
+.orient-title{font-size:13px;font-weight:700;color:#38bdf8;margin-bottom:7px}
+.orient-desc{font-size:12px;color:#94a3b8;line-height:1.6;margin-bottom:10px}
+.orient-desc strong{color:#e2e8f0}
+.photo-wrap{margin:8px 0}
+.photo-caption{font-size:10px;color:#475569;margin-top:4px;line-height:1.4;text-align:center;font-style:italic}
+.orient-warn{background:#1c0a0a;border:2px solid #7f1d1d;border-radius:10px;padding:12px;margin-bottom:12px}
+.orient-warn-title{font-size:13px;font-weight:700;color:#f87171;margin-bottom:6px}
+.orient-warn-body{font-size:12px;color:#fca5a5;line-height:1.7}
+.orient-warn-body strong{color:#fff}
+
+.od-card{background:#0d1826;border:1px solid #1e3a5f;border-radius:10px;padding:14px;margin-bottom:14px}
+.od-head{font-size:13px;font-weight:700;color:#38bdf8;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.od-num{background:#1d4ed8;color:#fff;border-radius:50%;min-width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.od-rule{font-size:12px;color:#94a3b8;line-height:1.6;margin-bottom:6px;padding:8px 12px;background:#111827;border-radius:6px;border-left:3px solid #f59e0b}
+.od-p1{color:#f59e0b;font-weight:700}
+.od-p14{color:#38bdf8;font-weight:700}
+.od-sum{background:#0d1f38;border:1.5px solid #1e4d80;border-radius:10px;padding:12px;margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -272,6 +291,14 @@ input[type=number]:focus{outline:none;border-color:#3b82f6}
   <div class="res-section">
     <h3 id="res-wiring-h">Wiring diagram</h3>
     <div id="wiring-diagram"></div>
+  </div>
+  <div class="res-section">
+    <h3>Connector orientation &amp; pin numbering</h3>
+    <div id="connector-diagrams"></div>
+  </div>
+  <div class="res-section">
+    <h3>Connector orientation &amp; pin positions</h3>
+    <div id="connector-diagrams"></div>
   </div>
   <div class="res-section">
     <h3 id="res-steps-h">Step-by-step</h3>
@@ -574,6 +601,7 @@ function buildResult(){
   }
 
   buildWiringDiagram(pcb,pcbFar,cnt);
+  buildConnectorDiagrams(pcb,cnt);
   buildSteps(pcb,pcbFar,cnt);
 }
 
@@ -669,6 +697,465 @@ document.addEventListener('keydown',function(e){
   if(ph.id==='ph1')confirmPins();
   else if(ph.id==='ph2')recordBtn();
 });
+
+function buildConnectorDiagrams(pcb){
+  var container=document.getElementById('connector-diagrams');
+  if(!container)return;
+  container.innerHTML='';
+  var isRight=(S.connector==='right');
+
+  function gc(fn){
+    var m={COMMON:'#ef4444','DMG-C':'#22c55e','DMG-Near':'#a855f7','DMG-Far':'#ec4899',
+      S1:'#1d4ed8',S2:'#0e7490',S3:'#15803d',S4:'#a16207',S5:'#b45309',
+      S6:'#4338ca',S7:'#0f766e',S8:'#c2410c',S9:'#7c3aed',S10:'#be185d'};
+    return m[fn]||'#374151';
+  }
+  function gtc(fn){return fn==='NC'?'#334155':'#fff';}
+  function abbr(fn){
+    return fn.replace('DMG-Near','DMGNr').replace('DMG-Far','DMGFr').replace('COMMON','COM').replace('NC','');
+  }
+
+  // === CARD 1: Machine connector ===
+  var c1=document.createElement('div');c1.className='orient-section';
+  c1.innerHTML='<div class="orient-title">Part A — C-arm machine connector (horizontal)</div>'
+    +'<div class="orient-desc">The C-arm machine has <strong>horizontal</strong> connectors. '
+    +'<strong style="color:#f59e0b">Pin 1 is on the RIGHT end</strong>, Pin 14 on the LEFT. '
+    +'Count from right to left. The connector has a physical key notch or mark at Pin 1.</div>'
+    +'<div class="photo-wrap"><img src="data:image/jpeg;base64,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" style="width:100%;border-radius:6px"/>'
+    +'<div class="photo-caption">Actual C-arm machine connectors. Labels show Pin 14 (far left) and Pin 1 (right side) on each connector.</div></div>';
+
+  // Machine horizontal SVG
+  var W=600,pH=46,pW=32,gap=2,tot=14*pW+13*gap,sx=(W-tot)/2;
+  var bY=14,bH=pH+12;
+  var sm='<svg viewBox="0 0 '+W+' '+(bY+bH+40)+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin:8px 0">';
+  sm+='<rect width="'+W+'" height="'+(bY+bH+40)+'" fill="#060e1a" rx="4"/>';
+  // body
+  sm+='<rect x="'+(sx-6)+'" y="'+bY+'" width="'+(tot+12)+'" height="'+bH+'" rx="5" fill="#1e293b" stroke="#2d3f55" stroke-width="2"/>';
+  // notch right = Pin1
+  sm+='<polygon points="'+(sx+tot+6)+','+(bY+6)+' '+(sx+tot+18)+','+(bY+bH/2)+' '+(sx+tot+6)+','+(bY+bH-6)+'" fill="#f59e0b"/>';
+  // pins - pin1 is rightmost
+  for(var i=1;i<=14;i++){
+    var px=sx+(14-i)*(pW+gap);
+    var info=pinFnOrig(i);
+    var fc=gc(info.fn);
+    sm+='<rect x="'+px+'" y="'+(bY+5)+'" width="'+pW+'" height="'+(bH-10)+'" rx="2" fill="'+fc+'" stroke="#060e1a" stroke-width="1"/>';
+    sm+='<text x="'+(px+pW/2)+'" y="'+(bY+bH/2-2)+'" text-anchor="middle" font-size="8" font-weight="800" fill="'+gtc(info.fn)+'" font-family="Segoe UI,sans-serif">'+i+'</text>';
+    sm+='<text x="'+(px+pW/2)+'" y="'+(bY+bH/2+8)+'" text-anchor="middle" font-size="5.5" fill="'+gtc(info.fn)+'" font-family="Segoe UI,sans-serif">'+abbr(info.fn)+'</text>';
+  }
+  // labels
+  sm+='<text x="'+(sx+tot)+'" y="'+(bY+bH+14)+'" text-anchor="end" font-size="9" font-weight="800" fill="#f59e0b" font-family="Segoe UI,sans-serif">Pin 1 (RIGHT) &#9654;</text>';
+  sm+='<text x="'+sx+'" y="'+(bY+bH+14)+'" text-anchor="start" font-size="9" font-weight="800" fill="#38bdf8" font-family="Segoe UI,sans-serif">&#9664; Pin 14 (LEFT)</text>';
+  // arrow right-to-left
+  var ay=bY+bH+28;
+  sm+='<line x1="'+(sx+tot)+'" y1="'+ay+'" x2="'+sx+'" y2="'+ay+'" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,2"/>';
+  sm+='<polygon points="'+sx+','+(ay-3)+' '+(sx-7)+','+ay+' '+sx+','+(ay+3)+'" fill="#475569"/>';
+  sm+='<text x="'+W/2+'" y="'+(ay+12)+'" text-anchor="middle" font-size="8" fill="#475569" font-family="Segoe UI,sans-serif">Count direction on machine: right to left = 1 to 14</text>';
+  sm+='</svg>';
+
+  c1.innerHTML+=sm;
+  container.appendChild(c1);
+
+  // === CARD 2: PCK connector ===
+  var c2=document.createElement('div');c2.className='orient-section';
+  c2.innerHTML='<div class="orient-title">Part B — '+pcb.name+' PCB connector (vertical)</div>'
+    +'<div class="orient-desc">The Radiaction PCK connector is <strong>vertical</strong>. The flat cable runs down from the PCB. '
+    +'<strong style="color:#f59e0b">Pin 1 is always at the TOP</strong>, Pin 14 is at the BOTTOM. Count top to bottom.</div>'
+    +'<div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">'
+    +'<div style="flex:0 0 auto"><img src="data:image/jpeg;base64,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" style="width:160px;border-radius:6px;display:block"/>'
+    +'<div class="photo-caption" style="width:160px">Flat cable exits PCB downward. Wires insert into bottom of the black connector housing.</div></div>'
+    +'<div style="flex:1;min-width:160px" id="pcb-svg-slot"></div></div>';
+  container.appendChild(c2);
+
+  // PCK vertical SVG
+  var pH2=24,pW2=90,gap2=2,tot2=14*pH2+13*gap2;
+  var VW=220,VH=tot2+80,bX=(VW-pW2)/2;
+  var sp='<svg viewBox="0 0 '+VW+' '+VH+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">';
+  sp+='<rect width="'+VW+'" height="'+VH+'" fill="#060e1a" rx="4"/>';
+  // flat cable above
+  sp+='<rect x="'+(VW/2-14)+'" y="4" width="28" height="28" fill="#0d9488" rx="2" opacity="0.8"/>';
+  sp+='<text x="'+VW/2+'" y="22" text-anchor="middle" font-size="8" fill="#99f6e4" font-family="Segoe UI,sans-serif" font-weight="700">cable</text>';
+  // body
+  var bY2=34;
+  sp+='<rect x="'+(bX-6)+'" y="'+bY2+'" width="'+(pW2+12)+'" height="'+(tot2+12)+'" rx="5" fill="#0f2744" stroke="#1e4d80" stroke-width="2"/>';
+  // notch
+  // Notch always at TOP since Pin 1 is always at top
+  sp+='<polygon points="'+(bX+6)+','+bY2+' '+VW/2+','+(bY2-10)+' '+(bX+pW2-6)+','+bY2+'" fill="#f59e0b"/>';
+  // pins
+  for(var i=1;i<=14;i++){
+    var phys=i-1; // Pin 1 always at TOP, count top to bottom
+    var py=bY2+6+phys*(pH2+gap2);
+    var info=pinFnPCB(i);
+    var fc=gc(info.fn);
+    sp+='<rect x="'+bX+'" y="'+py+'" width="'+pW2+'" height="'+pH2+'" rx="2" fill="'+fc+'" stroke="#060e1a" stroke-width="1"/>';
+    sp+='<text x="'+(bX+pW2/2)+'" y="'+(py+pH2/2-2)+'" text-anchor="middle" font-size="8" font-weight="800" fill="'+gtc(info.fn)+'" font-family="Segoe UI,sans-serif">'+i+'</text>';
+    sp+='<text x="'+(bX+pW2/2)+'" y="'+(py+pH2/2+8)+'" text-anchor="middle" font-size="6" fill="'+gtc(info.fn)+'" font-family="Segoe UI,sans-serif">'+abbr(info.fn)+'</text>';
+  }
+  // pin labels
+  var topY=bY2+8, botY=bY2+tot2+8;
+  var topLbl='Pin 1 (TOP)', botLbl='Pin 14 (BOTTOM)';
+  var topCol='#f59e0b', botCol='#38bdf8';
+  sp+='<text x="'+(bX-4)+'" y="'+topY+'" text-anchor="end" font-size="8" font-weight="800" fill="'+topCol+'" font-family="Segoe UI,sans-serif">'+topLbl+' &#9654;</text>';
+  sp+='<text x="'+(bX-4)+'" y="'+botY+'" text-anchor="end" font-size="8" font-weight="800" fill="'+botCol+'" font-family="Segoe UI,sans-serif">'+botLbl+' &#9654;</text>';
+  // count arrow
+  var ax2=bX+pW2+14;
+  // Arrow always downward: top to bottom
+  sp+='<line x1="'+ax2+'" y1="'+bY2+'" x2="'+ax2+'" y2="'+(bY2+tot2)+'" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,2"/>';
+  sp+='<polygon points="'+(ax2-3)+','+(bY2+tot2)+' '+ax2+','+(bY2+tot2+7)+' '+(ax2+3)+','+(bY2+tot2)+'" fill="#475569"/>';
+  sp+='<text x="'+VW/2+'" y="'+(VH-4)+'" text-anchor="middle" font-size="7.5" fill="#f59e0b" font-family="Segoe UI,sans-serif">&#9650; Notch = Pin 1 at TOP</text>';
+  sp+='</svg>';
+
+  container.appendChild(c2);
+  // inject pcb svg after appending
+  var slot=document.getElementById('pcb-svg-slot');
+  if(slot){var tmp=document.createElement('div');tmp.innerHTML=sp;slot.appendChild(tmp.firstChild);}
+
+  // === CARD 3: Warning ===
+  var c3=document.createElement('div');c3.className='orient-warn';
+  c3.innerHTML='<div class="orient-warn-title">&#9888; CRITICAL: Wires run in opposite directions</div>'
+    +'<div class="orient-warn-body">'
+    +'Machine connector is <strong>horizontal</strong> — count right &#8594; left = Pin 1 &#8594; Pin 14.<br>'
+    +'PCB connector is <strong>vertical</strong> — count top &#8595; bottom = Pin 1 &#8594; Pin 14.<br><br>'
+    +'Wire 1 on the machine does NOT go into position 1 on the PCB. Each wire must be routed to its function-matched position. Use the step-by-step instructions below.'
+    +'</div>';
+  container.appendChild(c3);
+}
+
+function buildSteps(pcb,pcbFar,cnt){
+  var sc=document.getElementById('steps');sc.innerHTML='';
+  function add(n,t,d){
+    var el=document.createElement('div');el.className='step-c';
+    el.innerHTML='<div class="sn">Step '+n+'</div><div class="st">'+t+'</div>'+(d?'<div class="sd">'+d+'</div>':'');
+    sc.appendChild(el);
+  }
+  var BDESC2={S1:'Move up',S2:'Move down',S3:'Park/Reset',S4:'Laser/Light',
+    S5:'Move right',S6:'Move left',S7:'Rotate right',S8:'Orbit right',S9:'Rotate left',S10:'Orbit left'};
+  add(1,'Orient <span class="hl">'+pcb.name+'</span>: <span class="hl">Pin 1 on the LEFT</span>.',
+    'WARNING: Wires run OPPOSITE direction vs machine. Verify Pin 1 label on PCB before inserting any wire.');
+  add(2,'<span style="color:'+WIRE_COL.COMMON+'">&#9679;</span> COMMON: machine Pin <span class="hl">'+S.commonPin+'</span> --> PCB Pin <span class="hl">'+pcb.common+'</span>','Shared return for all buttons. Use RED wire.');
+  add(3,'<span style="color:'+WIRE_COL.DMGC+'">&#9679;</span> DMG Common: machine Pin <span class="hl">'+S.dmgCommon+'</span> --> PCB Pin <span class="hl">'+pcb.dmgCommon+'</span>','DMG positive. Powers panel-ID circuit.');
+  add(4,'<span style="color:'+WIRE_COL.DMGNEAR+'">&#9679;</span> DMG Near (panel closer to detector): machine Pin <span class="hl">'+S.dmgNear+'</span> --> PCB Pin <span class="hl">'+pcb.dmgNear+'</span>','If wrong panel reported: swap DMG Near and DMG Far on inter-panel cable.');
+  add(5,'<span style="color:'+WIRE_COL.DMGFAR+'">&#9679;</span> DMG Far: machine Pin <span class="hl">'+S.dmgFar+'</span> --> PCB Pin <span class="hl">'+pcbFar+'</span>','');
+  var sn=6;
+  ALL_BTNS.forEach(function(bid){
+    if(bid==='S4'&&!S.hasLaser){
+      add(sn,'<span style="color:'+WIRE_COL.S4+'">&#9679;</span> S4 (Laser): NOT INSTALLED','No laser button on this machine -- PCB Pin '+pcb.pins['S4']+' left unconnected.');
+      sn++;return;
+    }
+    var op=S.buttonMap[bid];if(!op)return;
+    var wc=WIRE_COL[bid]||'#94a3b8';
+    add(sn,'<span style="color:'+wc+'">&#9679;</span> '+bid+': machine Pin <span class="hl">'+op+'</span> --> PCB Pin <span class="hl">'+pcb.pins[bid]+'</span>',BDESC2[bid]);
+    sn++;
+  });
+  add(sn,'Final check: press each button on the installed Radiaction panel.','Wrong direction? Swap DMG Near and DMG Far on inter-panel cable. ODS wires connect to shield harness independently.');
+}
+
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter')return;
+  var ph=document.querySelector('.phase.active');if(!ph)return;
+  if(ph.id==='ph1')confirmPins();
+  else if(ph.id==='ph2')recordBtn();
+});
+
+function buildConnectorDiagrams(pcb){
+  var container = document.getElementById('connector-diagrams');
+  if(!container)return;
+  container.innerHTML='';
+
+  var isRight = (S.connector==='right'); // PCK0740 = right, PCK0740 has Pin14 LEFT, Pin1 RIGHT on PCB
+  // PCK0740: PCB Pin14 on LEFT, Pin1 on RIGHT  (common=Pin1 so it's on RIGHT end)
+  // PCK0741: PCB Pin1 on LEFT, Pin14 on RIGHT  (common=Pin14 so it's on RIGHT end)
+  // Machine connector: always count 1→14 left to right (standard)
+  // NOTE: wires run OPPOSITE direction between machine and PCB
+
+  var W=660, pH=120, pinW=34, pinH=44, pinGap=2;
+  var totalPinWidth = 14*pinW + 13*pinGap; // ~490px
+  var connStart = (W - totalPinWidth)/2;
+
+  function pinX(n){ return connStart + (n-1)*(pinW+pinGap); } // n=1..14
+
+  // Color helper - same as wire colors
+  var colMap = {
+    COMMON:'#ef4444', 'DMG-C':'#22c55e', 'DMG-Near':'#a855f7', 'DMG-Far':'#ec4899'
+  };
+  var btnCols = {
+    S1:'#60a5fa',S2:'#38bdf8',S3:'#a3e635',S4:'#facc15',S5:'#fb923c',
+    S6:'#2dd4bf',S7:'#34d399',S8:'#f97316',S9:'#fbbf24',S10:'#e879f9'
+  };
+  function getPinColor(fn){
+    if(fn==='COMMON')return'#ef4444';
+    if(fn==='DMG-C')return'#22c55e';
+    if(fn==='DMG-Near')return'#a855f7';
+    if(fn==='DMG-Far')return'#ec4899';
+    if(fn==='NC')return'#1e293b';
+    return btnCols[fn]||'#7c2d12';
+  }
+  function getPinTc(fn){
+    if(fn==='NC')return'#334155';
+    return'#fff';
+  }
+
+  // =====================
+  // DIAGRAM 1: Machine connector
+  // =====================
+  var svgM = '<svg viewBox="0 0 '+W+' 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-bottom:4px">';
+  svgM += '<rect width="'+W+'" height="160" fill="#060e1a" rx="6"/>';
+  // Title
+  svgM += '<text x="'+W/2+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8" font-family="Segoe UI,sans-serif">ORIGINAL C-ARM MACHINE CONNECTOR (face view, as you plug it in)</text>';
+
+  // Connector body
+  var bodyX = connStart - 8, bodyW = totalPinWidth + 16, bodyY=28, bodyH=80;
+  svgM += '<rect x="'+bodyX+'" y="'+bodyY+'" width="'+bodyW+'" height="'+bodyH+'" rx="5" fill="#1e293b" stroke="#334155" stroke-width="2"/>';
+  // Notch on Pin 1 side (left)
+  svgM += '<polygon points="'+bodyX+','+(bodyY+10)+' '+(bodyX-10)+','+(bodyY+20)+' '+bodyX+','+(bodyY+30)+'" fill="#f59e0b"/>';
+  svgM += '<text x="'+(bodyX-14)+'" y="'+(bodyY+52)+'" text-anchor="middle" font-size="8" font-weight="700" fill="#f59e0b" font-family="Segoe UI,sans-serif" transform="rotate(-90,'+(bodyX-14)+','+(bodyY+52)+')">KEY</text>';
+
+  // Pin 1 indicator dot on connector
+  svgM += '<circle cx="'+(connStart+4)+'" cy="'+(bodyY+bodyH-8)+'" r="4" fill="#f59e0b"/>';
+
+  // Pins
+  for(var i=1;i<=14;i++){
+    var px = pinX(i);
+    var info = pinFnOrig(i);
+    var fc = getPinColor(info.fn);
+    var tc = getPinTc(info.fn);
+    // Pin socket rectangle
+    svgM += '<rect x="'+px+'" y="'+(bodyY+8)+'" width="'+pinW+'" height="'+(bodyH-16)+'" rx="3" fill="'+fc+'" stroke="#0f172a" stroke-width="1"/>';
+    // Pin number
+    svgM += '<text x="'+(px+pinW/2)+'" y="'+(bodyY+bodyH/2-4)+'" text-anchor="middle" font-size="9" font-weight="800" fill="'+tc+'" font-family="Segoe UI,sans-serif">'+i+'</text>';
+    // Function label
+    var fn = info.fn==='NC'?'':info.fn.replace('DMG-Near','DMGNr').replace('DMG-Far','DMGFr').replace('COMMON','COM');
+    svgM += '<text x="'+(px+pinW/2)+'" y="'+(bodyY+bodyH/2+8)+'" text-anchor="middle" font-size="6" font-weight="700" fill="'+tc+'" font-family="Segoe UI,sans-serif">'+fn+'</text>';
+  }
+
+  // Pin 1 label below
+  svgM += '<text x="'+pinX(1)+'" y="120" text-anchor="start" font-size="10" font-weight="800" fill="#f59e0b" font-family="Segoe UI,sans-serif">&#9660; PIN 1</text>';
+  svgM += '<text x="'+(pinX(14)+pinW)+'" y="120" text-anchor="end" font-size="10" font-weight="800" fill="#38bdf8" font-family="Segoe UI,sans-serif">PIN 14 &#9660;</text>';
+  // Direction arrow
+  var arrowY=135;
+  svgM += '<line x1="'+pinX(1)+'" y1="'+arrowY+'" x2="'+(pinX(14)+pinW)+'" y2="'+arrowY+'" stroke="#475569" stroke-width="1.5"/>';
+  svgM += '<polygon points="'+(pinX(14)+pinW)+','+(arrowY-4)+' '+(pinX(14)+pinW+8)+','+arrowY+' '+(pinX(14)+pinW)+','+(arrowY+4)+'" fill="#475569"/>';
+  svgM += '<text x="'+W/2+'" y="150" text-anchor="middle" font-size="10" fill="#475569" font-family="Segoe UI,sans-serif">Count left &#8594; right: 1, 2, 3 ... 14. Notch (&#9660;) marks Pin 1.</text>';
+  svgM += '</svg>';
+
+  // =====================
+  // CROSSING WIRES indicator
+  // =====================
+  var svgX = '<svg viewBox="0 0 '+W+' 60" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-bottom:4px">';
+  svgX += '<rect width="'+W+'" height="60" fill="#060e1a"/>';
+  svgX += '<text x="'+W/2+'" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="#f87171" font-family="Segoe UI,sans-serif">&#9888; WIRES RUN IN REVERSE DIRECTION</text>';
+  svgX += '<text x="'+W/2+'" y="38" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="Segoe UI,sans-serif">Machine Pin 1 does NOT connect to PCB Pin 1.</text>';
+  svgX += '<text x="'+W/2+'" y="54" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="Segoe UI,sans-serif">Machine common pin connects to PCB common pin (different numbers, see table above).</text>';
+  svgX += '</svg>';
+
+  // =====================
+  // DIAGRAM 2: PCB connector
+  // For PCK0740: Pin14 on LEFT, Pin1 on RIGHT  → count RIGHT to LEFT
+  // For PCK0741: Pin1 on LEFT, Pin14 on RIGHT  → count LEFT to RIGHT (same as machine)
+  // =====================
+  // PCK0740 (right connector): common=Pin1 which is on the RIGHT end of PCB
+  // PCK0741 (left connector):  common=Pin14 which is on the RIGHT end of PCB
+  // Both have COMMON on the RIGHT end of the PCB connector when facing front
+  // Pin 1 notch position:
+  //   PCK0740: Pin1 is on RIGHT → notch on RIGHT
+  //   PCK0741: Pin1 is on LEFT  → notch on LEFT
+
+  var pcbPin1OnLeft = !isRight; // PCK0741 has Pin1 on left; PCK0740 has Pin1 on right
+
+  var svgP = '<svg viewBox="0 0 '+W+' 185" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">';
+  svgP += '<rect width="'+W+'" height="185" fill="#060e1a" rx="6"/>';
+  svgP += '<text x="'+W/2+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#38bdf8" font-family="Segoe UI,sans-serif">'+pcb.name+' PCB CONNECTOR (face view, wires enter from back)</text>';
+
+  // Connector body
+  svgP += '<rect x="'+bodyX+'" y="'+bodyY+'" width="'+bodyW+'" height="'+bodyH+'" rx="5" fill="#0f2744" stroke="#1e4d80" stroke-width="2"/>';
+
+  // Notch position
+  if(pcbPin1OnLeft){
+    // PCK0741: notch on LEFT (Pin1 on left)
+    svgP += '<polygon points="'+bodyX+','+(bodyY+10)+' '+(bodyX-10)+','+(bodyY+20)+' '+bodyX+','+(bodyY+30)+'" fill="#f59e0b"/>';
+    svgP += '<circle cx="'+(connStart+4)+'" cy="'+(bodyY+bodyH-8)+'" r="4" fill="#f59e0b"/>';
+  } else {
+    // PCK0740: notch on RIGHT (Pin1 on right)
+    var notchX = bodyX+bodyW;
+    svgP += '<polygon points="'+notchX+','+(bodyY+10)+' '+(notchX+10)+','+(bodyY+20)+' '+notchX+','+(bodyY+30)+'" fill="#f59e0b"/>';
+    svgP += '<circle cx="'+(pinX(14)+pinW-4)+'" cy="'+(bodyY+bodyH-8)+'" r="4" fill="#f59e0b"/>';
+  }
+
+  // Draw PCB pins in physical order (1..14 left to right visually)
+  // but label them as they physically appear on the PCB
+  for(var i=1;i<=14;i++){
+    var px = pinX(i);
+    var info = pinFnPCB(i);
+    var fc = getPinColor(info.fn);
+    var tc = getPinTc(info.fn);
+    svgP += '<rect x="'+px+'" y="'+(bodyY+8)+'" width="'+pinW+'" height="'+(bodyH-16)+'" rx="3" fill="'+fc+'" stroke="#0f172a" stroke-width="1"/>';
+    svgP += '<text x="'+(px+pinW/2)+'" y="'+(bodyY+bodyH/2-4)+'" text-anchor="middle" font-size="9" font-weight="800" fill="'+tc+'" font-family="Segoe UI,sans-serif">'+i+'</text>';
+    var fn2 = info.fn==='NC'?'':info.fn.replace('DMG-Near','DMGNr').replace('DMG-Far','DMGFr').replace('COMMON','COM');
+    svgP += '<text x="'+(px+pinW/2)+'" y="'+(bodyY+bodyH/2+8)+'" text-anchor="middle" font-size="6" font-weight="700" fill="'+tc+'" font-family="Segoe UI,sans-serif">'+fn2+'</text>';
+  }
+
+  // Labels below PCB
+  if(pcbPin1OnLeft){
+    // PCK0741: Pin1 left, Pin14 right
+    svgP += '<text x="'+pinX(1)+'" y="120" text-anchor="start" font-size="10" font-weight="800" fill="#f59e0b" font-family="Segoe UI,sans-serif">&#9660; PIN 1 (left end)</text>';
+    svgP += '<text x="'+(pinX(14)+pinW)+'" y="120" text-anchor="end" font-size="10" font-weight="800" fill="#38bdf8" font-family="Segoe UI,sans-serif">PIN 14 &#9660; (right end)</text>';
+    svgP += '<line x1="'+pinX(1)+'" y1="'+arrowY+'" x2="'+(pinX(14)+pinW)+'" y2="'+arrowY+'" stroke="#3b82f6" stroke-width="1.5"/>';
+    svgP += '<polygon points="'+(pinX(14)+pinW)+','+(arrowY-4)+' '+(pinX(14)+pinW+8)+','+arrowY+' '+(pinX(14)+pinW)+','+(arrowY+4)+'" fill="#3b82f6"/>';
+    svgP += '<text x="'+W/2+'" y="150" text-anchor="middle" font-size="10" fill="#3b82f6" font-family="Segoe UI,sans-serif">Count left &#8594; right: 1, 2, 3 ... 14</text>';
+  } else {
+    // PCK0740: Pin14 left, Pin1 right
+    svgP += '<text x="'+pinX(1)+'" y="120" text-anchor="start" font-size="10" font-weight="800" fill="#38bdf8" font-family="Segoe UI,sans-serif">&#9660; PIN 14 (left end)</text>';
+    svgP += '<text x="'+(pinX(14)+pinW)+'" y="120" text-anchor="end" font-size="10" font-weight="800" fill="#f59e0b" font-family="Segoe UI,sans-serif">PIN 1 &#9660; (right end)</text>';
+    svgP += '<line x1="'+(pinX(14)+pinW)+'" y1="'+arrowY+'" x2="'+pinX(1)+'" y2="'+arrowY+'" stroke="#3b82f6" stroke-width="1.5"/>';
+    svgP += '<polygon points="'+pinX(1)+','+(arrowY-4)+' '+(pinX(1)-8)+','+arrowY+' '+pinX(1)+','+(arrowY+4)+'" fill="#3b82f6"/>';
+    svgP += '<text x="'+W/2+'" y="150" text-anchor="middle" font-size="10" fill="#3b82f6" font-family="Segoe UI,sans-serif">&#9888; Count right &#8592; left: 1, 2, 3 ... 14  (Pin 1 is on the RIGHT end)</text>';
+  }
+
+  // Warning box
+  var warnY = 160;
+  svgP += '<rect x="'+connStart+'" y="'+warnY+'" width="'+totalPinWidth+'" height="20" rx="4" fill="'+(pcbPin1OnLeft?'#052e16':'#450a0a')+'"/>';
+  svgP += '<text x="'+W/2+'" y="'+(warnY+14)+'" text-anchor="middle" font-size="10" font-weight="700" fill="'+(pcbPin1OnLeft?'#6ee7b7':'#fca5a5')+'" font-family="Segoe UI,sans-serif">'+
+    (pcbPin1OnLeft?'Pin 1 notch is on the LEFT end of this PCB connector':'&#9888; Pin 1 notch is on the RIGHT end of this PCB connector -- opposite to machine!')+
+  '</text>';
+  svgP += '</svg>';
+
+  // Assemble into card
+  var wrap = document.createElement('div');
+  wrap.className = 'wiring-wrap';
+  wrap.style.marginBottom = '12px';
+
+  var h4 = document.createElement('h4');
+  h4.textContent = 'Connector orientation -- how to hold and count pins';
+  wrap.appendChild(h4);
+
+  var p1 = document.createElement('p');
+  p1.innerHTML = 'Each colored pin shows its function. <span style="color:#f59e0b;font-weight:700">Amber triangle (&#9650;) = Pin 1 notch</span> on the connector housing. Always orient the connector to match this diagram before inserting any wire.';
+  wrap.appendChild(p1);
+
+  var d1=document.createElement('div');d1.innerHTML=svgM;wrap.appendChild(d1);
+  var dx=document.createElement('div');dx.innerHTML=svgX;wrap.appendChild(dx);
+  var d2=document.createElement('div');d2.innerHTML=svgP;wrap.appendChild(d2);
+
+  container.appendChild(wrap);
+}
+
+
+function buildConnectorDiagrams(pcb, pinCount){
+  var el=document.getElementById('connector-diagrams');
+  if(!el)return;
+  el.innerHTML='';
+
+  /* === DIAGRAM A: Machine connector === */
+  /* Horizontal. Pin 1 on RIGHT. Pin N on LEFT. Numbers shown left-to-right as N...2,1 */
+  var mW=600, PW=36, PH=64, GAP=3;
+  var tot=pinCount*PW+(pinCount-1)*GAP;
+  var x0=Math.floor((mW-tot)/2), bY=44, bH=PH+14, H=bY+bH+56;
+
+  var svgA='<svg viewBox="0 0 '+mW+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin:8px 0">';
+  svgA+='<rect width="'+mW+'" height="'+H+'" fill="#060e1a" rx="6"/>';
+  /* direction arrow */
+  svgA+='<line x1="'+(x0+tot)+'" y1="30" x2="'+(x0+10)+'" y2="30" stroke="#475569" stroke-width="2"/>';
+  svgA+='<polygon points="'+x0+',30 '+(x0+10)+',25 '+(x0+10)+',35" fill="#475569"/>';
+  svgA+='<text x="'+(mW/2)+'" y="26" text-anchor="middle" font-size="9" fill="#475569" font-family="Segoe UI,sans-serif">COUNT DIRECTION (right to left)</text>';
+  /* housing */
+  svgA+='<rect x="'+(x0-8)+'" y="'+bY+'" width="'+(tot+16)+'" height="'+bH+'" rx="6" fill="#1e293b" stroke="#334155" stroke-width="2"/>';
+  /* key notch on RIGHT (pin 1) */
+  svgA+='<polygon points="'+(x0+tot+8)+','+(bY+10)+' '+(x0+tot+22)+','+(bY+bH/2)+' '+(x0+tot+8)+','+(bY+bH-10)+'" fill="#f59e0b"/>';
+  /* pins: leftmost slot = pin N, rightmost slot = pin 1 */
+  for(var i=1;i<=pinCount;i++){
+    var slot=pinCount-i; /* slot 0=leftmost=pinN, slot pinCount-1=rightmost=pin1 */
+    var px=x0+slot*(PW+GAP);
+    var isOne=(i===1), isN=(i===pinCount);
+    var bg=isOne?'#7c2d12':isN?'#1e3a5f':'#1e293b';
+    var bdr=isOne?'#f59e0b':isN?'#38bdf8':'#475569';
+    var bw=isOne||isN?2.5:1.5;
+    var tc=isOne?'#fbbf24':isN?'#7dd3fc':'#94a3b8';
+    svgA+='<rect x="'+px+'" y="'+(bY+6)+'" width="'+PW+'" height="'+(bH-12)+'" rx="3" fill="'+bg+'" stroke="'+bdr+'" stroke-width="'+bw+'"/>';
+    svgA+='<text x="'+(px+PW/2)+'" y="'+(bY+bH/2+5)+'" text-anchor="middle" font-size="13" font-weight="800" fill="'+tc+'" font-family="Segoe UI,sans-serif">'+i+'</text>';
+  }
+  /* labels */
+  var lY=bY+bH+16;
+  svgA+='<text x="'+(x0+tot)+'" y="'+lY+'" text-anchor="end" font-size="11" font-weight="800" fill="#f59e0b" font-family="Segoe UI,sans-serif">Pin 1 (RIGHT end)</text>';
+  svgA+='<text x="'+x0+'" y="'+lY+'" text-anchor="start" font-size="11" font-weight="800" fill="#38bdf8" font-family="Segoe UI,sans-serif">Pin '+pinCount+' (LEFT end)</text>';
+  svgA+='<text x="'+(x0+tot)+'" y="'+(lY+15)+'" text-anchor="end" font-size="9" fill="#f59e0b" font-family="Segoe UI,sans-serif">&#9654; key notch here</text>';
+  svgA+='</svg>';
+
+  var cardA=document.createElement('div');
+  cardA.className='od-card';
+  cardA.innerHTML='<div class="od-head"><span class="od-num">A</span>Machine connector (horizontal &mdash; count right to left)</div>'
+    +'<div class="od-rule">Hold the connector facing you. <span class="od-p1">Pin 1 = RIGHT end</span> (key notch). <span class="od-p14">Pin '+pinCount+' = LEFT end</span>. Count right &rarr; left.</div>'
+    +svgA;
+  el.appendChild(cardA);
+
+  /* === DIAGRAM B: PCK vertical connector === */
+  /* Vertical. Pin 1 at TOP. Pin N at BOTTOM. */
+  var PH2=30, PW2=150, GAP2=3;
+  var tot2=pinCount*PH2+(pinCount-1)*GAP2;
+  var vW=320, vH=tot2+140, x02=Math.floor((vW-PW2)/2), bY2=90;
+
+  var svgB='<svg viewBox="0 0 '+vW+' '+vH+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;height:auto;display:block;margin:8px auto">';
+  svgB+='<rect width="'+vW+'" height="'+vH+'" fill="#060e1a" rx="6"/>';
+  /* PCB block */
+  svgB+='<rect x="50" y="10" width="'+(vW-100)+'" height="24" rx="4" fill="#064e3b" stroke="#059669" stroke-width="1.5"/>';
+  svgB+='<text x="'+vW/2+'" y="26" text-anchor="middle" font-size="10" font-weight="700" fill="#6ee7b7" font-family="Segoe UI,sans-serif">PCB</text>';
+  /* flat cable */
+  svgB+='<rect x="'+(vW/2-16)+'" y="34" width="32" height="'+(bY2-34)+'" fill="#0d9488" opacity="0.6" rx="2"/>';
+  svgB+='<text x="'+(vW/2)+'" y="62" text-anchor="middle" font-size="8" fill="#5eead4" font-family="Segoe UI,sans-serif">flat cable</text>';
+  /* key notch at TOP */
+  var cx=vW/2;
+  svgB+='<polygon points="'+(cx-13)+','+bY2+' '+cx+','+(bY2-14)+' '+(cx+13)+','+bY2+'" fill="#f59e0b"/>';
+  svgB+='<text x="'+cx+'" y="'+(bY2-17)+'" text-anchor="middle" font-size="9" font-weight="700" fill="#f59e0b" font-family="Segoe UI,sans-serif">&#9650; Pin 1  KEY NOTCH</text>';
+  /* housing */
+  svgB+='<rect x="'+(x02-8)+'" y="'+(bY2-2)+'" width="'+(PW2+16)+'" height="'+(tot2+10)+'" rx="6" fill="#0f2744" stroke="#1e4d80" stroke-width="2"/>';
+  /* direction arrow */
+  var axB=x02+PW2+22;
+  svgB+='<line x1="'+axB+'" y1="'+bY2+'" x2="'+axB+'" y2="'+(bY2+tot2)+'" stroke="#475569" stroke-width="2"/>';
+  svgB+='<polygon points="'+axB+','+(bY2+tot2)+' '+(axB-5)+','+(bY2+tot2-12)+' '+(axB+5)+','+(bY2+tot2-12)+'" fill="#475569"/>';
+  svgB+='<text x="'+(axB+10)+'" y="'+(bY2+tot2/2)+'" font-size="8" fill="#475569" font-family="Segoe UI,sans-serif" transform="rotate(90,'+(axB+10)+','+(bY2+tot2/2)+')">count direction</text>';
+  /* pins: top=1, bottom=N */
+  for(var i=1;i<=pinCount;i++){
+    var py=bY2+4+(i-1)*(PH2+GAP2);
+    var isOne=(i===1), isN=(i===pinCount);
+    var bg=isOne?'#7c2d12':isN?'#1e3a5f':'#1e293b';
+    var bdr=isOne?'#f59e0b':isN?'#38bdf8':'#475569';
+    var bw=isOne||isN?2.5:1.5;
+    var tc=isOne?'#fbbf24':isN?'#7dd3fc':'#94a3b8';
+    svgB+='<rect x="'+x02+'" y="'+py+'" width="'+PW2+'" height="'+PH2+'" rx="3" fill="'+bg+'" stroke="'+bdr+'" stroke-width="'+bw+'"/>';
+    svgB+='<text x="'+(x02+24)+'" y="'+(py+PH2/2+5)+'" font-size="13" font-weight="800" fill="'+tc+'" font-family="Segoe UI,sans-serif">'+i+'</text>';
+    if(isOne) svgB+='<text x="'+(x02+50)+'" y="'+(py+PH2/2+5)+'" font-size="10" fill="#f59e0b" font-family="Segoe UI,sans-serif">&#8592; Pin 1  (TOP)</text>';
+    if(isN)   svgB+='<text x="'+(x02+50)+'" y="'+(py+PH2/2+5)+'" font-size="10" fill="#38bdf8" font-family="Segoe UI,sans-serif">&#8592; Pin '+pinCount+'  (BOTTOM)</text>';
+  }
+  /* cable bends */
+  var bendY=bY2+tot2+14;
+  svgB+='<rect x="20" y="'+bendY+'" width="'+(vW-40)+'" height="26" rx="4" fill="#1c1917" stroke="#78716c" stroke-width="1.5" stroke-dasharray="5,3"/>';
+  svgB+='<text x="'+vW/2+'" y="'+(bendY+11)+'" text-anchor="middle" font-size="9" fill="#a8a29e" font-family="Segoe UI,sans-serif">cable bends 90&deg;</text>';
+  svgB+='<text x="'+vW/2+'" y="'+(bendY+22)+'" text-anchor="middle" font-size="9" fill="#a8a29e" font-family="Segoe UI,sans-serif">inserts horizontally into machine plug</text>';
+  svgB+='</svg>';
+
+  var cardB=document.createElement('div');
+  cardB.className='od-card';
+  cardB.innerHTML='<div class="od-head"><span class="od-num">B</span>'+pcb.name+' connector (vertical &mdash; count top to bottom)</div>'
+    +'<div class="od-rule">Flat cable hangs down from PCB. <span class="od-p1">Pin 1 = TOP</span> (key notch). <span class="od-p14">Pin '+pinCount+' = BOTTOM</span>. Count top &darr; bottom. Cable bends 90&deg; to plug into machine.</div>'
+    +svgB;
+  el.appendChild(cardB);
+
+  /* === SUMMARY === */
+  var sum=document.createElement('div');
+  sum.className='od-sum';
+  sum.innerHTML='<div style="font-size:12px;font-weight:700;color:#38bdf8;margin-bottom:8px">Quick reference</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+    +'<div style="background:#0a1f3d;border-radius:8px;padding:10px;text-align:center;font-size:12px;color:#94a3b8;line-height:2">'
+    +'<b style="color:#38bdf8">Machine</b><br>Horizontal<br>'
+    +'<b style="color:#f59e0b">1</b> &larr;&larr; <b style="color:#38bdf8">'+pinCount+'</b><br>'
+    +'<span style="color:#f59e0b">RIGHT</span> &rarr; <span style="color:#38bdf8">LEFT</span>'
+    +'</div>'
+    +'<div style="background:#0a1f14;border-radius:8px;padding:10px;text-align:center;font-size:12px;color:#94a3b8;line-height:2">'
+    +'<b style="color:#38bdf8">'+pcb.name+'</b><br>Vertical<br>'
+    +'<b style="color:#f59e0b">1</b> &uarr; TOP<br>'
+    +'<b style="color:#38bdf8">'+pinCount+'</b> &darr; BOTTOM'
+    +'</div></div>';
+  el.appendChild(sum);
+}
+
 window.addEventListener('load',function(){
   ALL_BTNS.forEach(function(b){setCS(b,'idle');});
 });
