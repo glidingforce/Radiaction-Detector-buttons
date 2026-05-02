@@ -3,133 +3,203 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Radiaction Pin Mapper</title>
+<title>Radiaction Medical — Detector Button Pin Mapper</title>
 <style>
+/* ===== RADIACTION BRAND ===== */
+:root{
+  --navy-deep: #0d1220;
+  --navy-dark: #111927;
+  --navy-mid:  #1a2535;
+  --navy-card: #1c2f48;
+  --navy-brand:#1c2756;
+  --blue:      #5997ca;
+  --blue-light:#7ab3d9;
+  --blue-dark: #3d7db5;
+  --border:    #253a5e;
+  --border-lt: #2d4a75;
+  --text:      #e8edf5;
+  --text2:     #8fa4bf;
+  --text3:     #5a738f;
+  --amber:     #f59e0b;
+  --green:     #10b981;
+  --red:       #ef4444;
+  --purple:    #a855f7;
+  --pink:      #ec4899;
+  --cyan:      #38bdf8;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#111827;color:#e2e8f0;min-height:100vh;padding:14px 16px}
-h1{font-size:18px;font-weight:700;color:#38bdf8}
-.sub{font-size:11px;color:#475569;margin-bottom:14px;margin-top:2px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--navy-deep);color:var(--text);min-height:100vh}
+
+/* ─── HEADER ─── */
+.rad-header{
+  background:var(--navy-brand);
+  padding:14px 18px;
+  display:flex;align-items:center;gap:14px;
+  border-bottom:2px solid var(--blue-dark);
+  box-shadow:0 2px 16px rgba(0,0,0,0.5);
+}
+.rad-logo{height:36px;width:auto;display:block;opacity:1}
+.rad-header-divider{width:1px;height:40px;background:rgba(255,255,255,0.2);flex-shrink:0}
+.rad-app-name{font-size:15px;font-weight:700;color:#fff;letter-spacing:0.2px}
+.rad-app-tag{font-size:10px;color:var(--blue-light);margin-top:2px;letter-spacing:0.6px;text-transform:uppercase}
+
+/* ─── PAGE BODY ─── */
+.page-body{padding:16px;max-width:700px;margin:0 auto}
+
+/* ─── FOOTER ─── */
+.rad-footer{background:var(--navy-brand);padding:14px 18px;text-align:center;border-top:2px solid var(--blue-dark)}
+.rad-footer-logo{height:24px;width:auto;display:inline-block;opacity:1;opacity:0.6;margin-bottom:4px}
+
+/* ─── PHASES ─── */
 .phase{display:none}.phase.active{display:block}
-.step-bar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.step-pill{background:#1e3a5f;color:#38bdf8;border:1px solid #1e4d80;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700;text-transform:uppercase;white-space:nowrap}
-.step-h{font-size:15px;font-weight:700;color:#f1f5f9}
-.instr{font-size:13px;color:#94a3b8;line-height:1.7;margin-bottom:12px;padding:9px 13px;background:#1a2535;border-left:3px solid #2563eb;border-radius:0 6px 6px 0}
-.instr strong{color:#e2e8f0}
-.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.sel-card{background:#1a2535;border:1.5px solid #2d4a6a;border-radius:10px;padding:14px;cursor:pointer;transition:all .15s}
-.sel-card:hover{border-color:#3b82f6;background:#162032}
-.sel-card h3{font-size:14px;font-weight:700;color:#38bdf8;margin-bottom:5px}
-.sel-card p{font-size:12px;color:#64748b;line-height:1.4}
-.tag{display:inline-block;margin-top:7px;background:#0f2744;color:#7dd3fc;border:1px solid #1e40af;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700}
-/* Laser question */
+
+/* ─── STEP BAR ─── */
+.step-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.step-pill{background:var(--navy-brand);color:var(--blue-light);border:1px solid var(--blue-dark);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap}
+.step-h{font-size:16px;font-weight:700;color:#fff}
+
+/* ─── INSTRUCTION BOX ─── */
+.instr{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px;padding:12px 14px;background:var(--navy-mid);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:0 8px 8px 0}
+.instr strong{color:var(--text)}
+
+/* ─── CONNECTOR CARDS ─── */
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.sel-card{background:var(--navy-card);border:1.5px solid var(--border);border-radius:12px;padding:18px 16px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.sel-card:hover{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue),0 4px 16px rgba(89,151,202,0.12)}
+.sel-card h3{font-size:14px;font-weight:700;color:var(--blue-light);margin-bottom:6px}
+.sel-card p{font-size:12px;color:var(--text3);line-height:1.4}
+.tag{display:inline-block;margin-top:9px;background:var(--navy-brand);color:var(--blue-light);border:1px solid var(--blue-dark);border-radius:4px;padding:2px 9px;font-size:10px;font-weight:700;letter-spacing:.5px}
+
+/* ─── LASER CARDS ─── */
 .laser-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-.laser-card{border-radius:10px;padding:18px 14px;cursor:pointer;text-align:center;font-weight:700;font-size:15px;transition:all .15s}
-.laser-yes{background:#064e3b;border:2px solid #10b981;color:#6ee7b7}
-.laser-yes:hover{background:#065f46}
-.laser-no{background:#1c1917;border:2px solid #78716c;color:#a8a29e}
-.laser-no:hover{background:#292524}
-.btn{display:inline-block;padding:8px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;transition:all .15s}
-.btn-blue{background:#1d4ed8;color:#fff}.btn-blue:hover{background:#2563eb}
-.btn-green{background:#065f46;color:#6ee7b7}.btn-green:hover{background:#047857}
-.btn-ghost{background:#1e293b;color:#94a3b8;border:1px solid #334155}.btn-ghost:hover{background:#243044}
+.laser-card{border-radius:12px;padding:20px 14px;cursor:pointer;text-align:center;font-weight:700;font-size:15px;transition:box-shadow .15s}
+.laser-yes{background:#062a1a;border:2px solid var(--green);color:#6ee7b7}
+.laser-yes:hover{box-shadow:0 0 0 1px var(--green),0 4px 16px rgba(16,185,129,0.15)}
+.laser-no{background:#1c1917;border:2px solid #57534e;color:#a8a29e}
+.laser-no:hover{box-shadow:0 0 0 1px #78716c}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-block;padding:9px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:box-shadow .15s,opacity .15s;letter-spacing:.2px}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-blue:hover{box-shadow:0 0 0 2px rgba(89,151,202,0.4);opacity:.92}
+.btn-green{background:#059669;color:#fff}
+.btn-green:hover{box-shadow:0 0 0 2px rgba(16,185,129,0.3);opacity:.92}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border-lt)}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue-light)}
 .btn-sm{padding:5px 12px;font-size:11px}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.prog-wrap{height:4px;background:#1e293b;border-radius:2px;margin-bottom:12px;overflow:hidden}
-.prog-fill{height:100%;background:linear-gradient(90deg,#1d4ed8,#7c3aed);border-radius:2px;transition:width .35s}
-.panel-wrap{background:#141f2e;border:1px solid #1e3a5f;border-radius:10px;padding:8px;margin-bottom:10px}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+/* ─── PROGRESS ─── */
+.prog-wrap{height:3px;background:var(--border);border-radius:2px;margin-bottom:14px;overflow:hidden}
+.prog-fill{height:100%;background:var(--blue);border-radius:2px;transition:width .35s}
+
+/* ─── PANEL SVG ─── */
+.panel-wrap{background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px}
 .panel-svg{width:100%;height:auto;display:block}
+
+/* ─── SVG BUTTON STATES ─── */
 .btn-circle{transition:fill .2s,stroke .2s,filter .2s}
-.btn-circle.idle{fill:#888;stroke:#aaa;stroke-width:2}
-.btn-circle.done{fill:#064e3b;stroke:#10b981;stroke-width:2.5}
-.btn-circle.active{fill:#92400e;stroke:#f59e0b;stroke-width:3;animation:svgblink .5s ease-in-out infinite alternate}
-.btn-circle.skip{fill:#1c1917;stroke:#44403c;stroke-width:1.5;opacity:0.5}
+.btn-circle.idle{fill:#4b5563;stroke:#6b7280;stroke-width:2}
+.btn-circle.done{fill:#064e3b;stroke:var(--green);stroke-width:2.5}
+.btn-circle.active{fill:#7c2d12;stroke:var(--amber);stroke-width:3;animation:svgblink .5s ease-in-out infinite alternate}
+.btn-circle.skip{fill:#1c1917;stroke:#44403c;stroke-width:1.5;opacity:0.4}
 @keyframes svgblink{
-  0%{filter:drop-shadow(0 0 8px rgba(245,158,11,1)) drop-shadow(0 0 18px rgba(245,158,11,.8))}
+  0%{filter:drop-shadow(0 0 8px rgba(245,158,11,.9)) drop-shadow(0 0 16px rgba(245,158,11,.6))}
   100%{filter:drop-shadow(0 0 2px rgba(245,158,11,.2))}
 }
 .btn-img{transition:opacity .2s}.btn-img.dim{opacity:0.35}
-.lbl-active{fill:#fef3c7 !important}.lbl-done{fill:#6ee7b7 !important}.lbl-skip{fill:#44403c !important}
-.conn-vis{background:#0d1826;border:1px solid #1e3a5f;border-radius:8px;padding:10px;margin:10px 0}
-.conn-vis-title{font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.lbl-active{fill:#fef3c7!important}.lbl-done{fill:#6ee7b7!important}.lbl-skip{fill:#374151!important}
+
+/* ─── CONNECTOR VIS ─── */
+.conn-vis{background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;padding:12px;margin:10px 0}
+.conn-vis-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
 .pin-row{display:flex;gap:4px;flex-wrap:wrap}
-.pd{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:1.5px solid #1e293b;color:#334155;background:#060e1a;flex-shrink:0;transition:all .25s}
+.pd{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:1.5px solid var(--border);color:var(--text3);background:var(--navy-dark);flex-shrink:0;transition:all .2s}
 .pd.common{background:#1e3a8a;color:#93c5fd;border-color:#2563eb}
 .pd.btn-p{background:#7c2d12;color:#fed7aa;border-color:#c2410c}
 .pd.dmg-c{background:#052e16;color:#6ee7b7;border-color:#059669}
 .pd.dmg-p1{background:#2e1065;color:#c4b5fd;border-color:#7c3aed}
 .pd.dmg-p2{background:#4a044e;color:#f0abfc;border-color:#a21caf}
-.pd.nc{background:#060e1a;color:#1e293b;border-color:#0f172a}
-/* Pins phase 1 — tappable */
-.pd.tap{cursor:pointer;background:#1e293b;color:#94a3b8;border-color:#334155}
-.pd.tap:hover{border-color:#7c3aed;color:#c4b5fd}
-/* 4-input pin card grid */
-.pin4-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
-.pin4-card{border-radius:10px;padding:12px 10px;text-align:center}
-.pin4-card.p-common{background:#0a1830;border:2px solid #ef4444}
-.pin4-card.p-dmgc{background:#051a0e;border:2px solid #22c55e}
-.pin4-card.p-dmgn{background:#130824;border:2px solid #a855f7}
-.pin4-card.p-dmgf{background:#1a0516;border:2px solid #ec4899}
-.pin4-card h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.pin4-card.p-common h4{color:#fca5a5}
-.pin4-card.p-dmgc h4{color:#86efac}
-.pin4-card.p-dmgn h4{color:#c084fc}
-.pin4-card.p-dmgf h4{color:#f9a8d4}
-.pin4-card input{width:68px !important;font-size:22px !important;padding:8px 6px !important}
-.inp-card{background:#0d1826;border:2px solid #d97706;border-radius:10px;padding:13px;margin:10px 0}
-.inp-title{font-size:13px;font-weight:700;color:#fbbf24;margin-bottom:4px}
-.inp-sub{font-size:12px;color:#64748b;margin-bottom:10px;line-height:1.5}
+.pd.nc{background:var(--navy-dark);color:var(--border);border-color:var(--navy-mid)}
+.pd.tap{cursor:pointer;background:var(--navy-mid);color:var(--text2);border-color:var(--border-lt)}
+.pd.tap:hover{border-color:var(--purple);color:#c4b5fd}
+
+/* ─── 4-INPUT DMG ─── */
+.pin4-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.pin4-card{border-radius:10px;padding:14px 12px;text-align:center}
+.pin4-card.p-common{background:#0a1830;border:1.5px solid #ef4444}
+.pin4-card.p-dmgc  {background:#051a0e;border:1.5px solid #22c55e}
+.pin4-card.p-dmgn  {background:#130824;border:1.5px solid #a855f7}
+.pin4-card.p-dmgf  {background:#1a0516;border:1.5px solid #ec4899}
+.pin4-card h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.pin4-card.p-common h4{color:#fca5a5}.pin4-card.p-dmgc h4{color:#86efac}
+.pin4-card.p-dmgn   h4{color:#c084fc}.pin4-card.p-dmgf h4{color:#f9a8d4}
+.pin4-card input{width:72px!important;font-size:22px!important;padding:8px 6px!important}
+
+/* ─── INPUT CARD ─── */
+.inp-card{background:var(--navy-mid);border:1.5px solid var(--amber);border-radius:10px;padding:14px;margin:10px 0}
+.inp-title{font-size:13px;font-weight:700;color:var(--amber);margin-bottom:5px}
+.inp-sub{font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5}
 .inp-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.inp-row label{font-size:12px;color:#94a3b8}
-input[type=number]{width:64px;padding:7px 8px;border-radius:7px;border:1.5px solid #334155;background:#060e1a;color:#e2e8f0;font-size:18px;font-weight:700;text-align:center;-moz-appearance:textfield}
+.inp-row label{font-size:12px;color:var(--text2)}
+input[type=number]{width:64px;padding:7px 8px;border-radius:7px;border:1.5px solid var(--border-lt);background:var(--navy-dark);color:var(--text);font-size:18px;font-weight:700;text-align:center;-moz-appearance:textfield}
 input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
-input[type=number]:focus{outline:none;border-color:#3b82f6}
-.err{color:#f87171;font-size:12px;margin-top:5px}
-.res-section{margin-bottom:16px}
-.res-section h3{font-size:11px;font-weight:700;color:#38bdf8;margin-bottom:7px;padding-bottom:4px;border-bottom:1px solid #1e3a5f;text-transform:uppercase;letter-spacing:.5px}
+input[type=number]:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(89,151,202,0.2)}
+.err{color:#f87171;font-size:12px;margin-top:6px}
+
+/* ─── RESULT ─── */
+.res-section{margin-bottom:18px}
+.res-section h3{font-size:10px;font-weight:700;color:var(--blue-light);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.8px}
 .wire-t{width:100%;border-collapse:collapse;font-size:12px}
-.wire-t th{text-align:left;padding:5px 8px;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;border-bottom:1px solid #1a2535}
-.wire-t td{padding:6px 8px;border-bottom:1px solid #0a1422}
-.badge{display:inline-block;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700}
+.wire-t th{text-align:left;padding:6px 10px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--navy-mid)}
+.wire-t td{padding:7px 10px;border-bottom:1px solid var(--navy-mid)}
+.wire-t tr:hover td{background:var(--navy-mid)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
 .bc{background:#1e3a8a;color:#93c5fd}.bdc{background:#052e16;color:#6ee7b7}
 .bdp1{background:#2e1065;color:#ddd6fe}.bdp2{background:#4a044e;color:#f5d0fe}
-.bbt{background:#7c2d12;color:#fed7aa}.bnc{background:#060e1a;color:#334155}
-.step-c{background:#0d1826;border:1px solid #1e3a5f;border-radius:8px;padding:11px 14px;margin-bottom:7px}
-.step-c .sn{font-size:10px;font-weight:700;color:#2563eb;text-transform:uppercase;margin-bottom:3px}
-.step-c .st{font-size:13px;color:#e2e8f0;line-height:1.5}
-.step-c .sd{font-size:11px;color:#64748b;margin-top:4px;line-height:1.5}
-.hl{color:#fbbf24;font-weight:700}
-.wiring-wrap{background:#0d1826;border:1px solid #1e3a5f;border-radius:10px;padding:10px;margin-bottom:12px}
-.wiring-wrap h4{font-size:12px;font-weight:700;color:#38bdf8;margin-bottom:6px}
-.wiring-wrap p{font-size:11px;color:#64748b;margin-bottom:8px;line-height:1.5}
-.wire-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.wleg{display:flex;align-items:center;gap:4px;font-size:10px;color:#94a3b8}
-.wleg-dot{width:16px;height:4px;border-radius:2px;flex-shrink:0}
-.step-num-badge{display:inline-block;background:#1e3a5f;color:#7dd3fc;border-radius:12px;padding:1px 8px;font-size:11px;font-weight:700;margin-right:6px}
-@media(max-width:480px){.card-grid{grid-template-columns:1fr}}
+.bbt{background:#7c2d12;color:#fed7aa}.bnc{background:var(--navy-dark);color:var(--text3)}
 
-.orient-section{background:#0d1826;border:1px solid #1e3a5f;border-radius:10px;padding:12px;margin-bottom:12px}
-.orient-title{font-size:13px;font-weight:700;color:#38bdf8;margin-bottom:7px}
-.orient-desc{font-size:12px;color:#94a3b8;line-height:1.6;margin-bottom:10px}
-.orient-desc strong{color:#e2e8f0}
-.photo-wrap{margin:8px 0}
-.photo-caption{font-size:10px;color:#475569;margin-top:4px;line-height:1.4;text-align:center;font-style:italic}
-.orient-warn{background:#1c0a0a;border:2px solid #7f1d1d;border-radius:10px;padding:12px;margin-bottom:12px}
-.orient-warn-title{font-size:13px;font-weight:700;color:#f87171;margin-bottom:6px}
-.orient-warn-body{font-size:12px;color:#fca5a5;line-height:1.7}
-.orient-warn-body strong{color:#fff}
+/* ─── STEP CARDS ─── */
+.step-c{background:var(--navy-mid);border:1px solid var(--border);border-left:3px solid var(--navy-brand);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.step-c .sn{font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:4px;letter-spacing:.5px}
+.step-c .st{font-size:13px;color:var(--text);line-height:1.5}
+.step-c .sd{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5}
+.hl{color:var(--amber);font-weight:700}
 
-.od-card{background:#0d1826;border:1px solid #1e3a5f;border-radius:10px;padding:14px;margin-bottom:14px}
-.od-head{font-size:13px;font-weight:700;color:#38bdf8;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.od-num{background:#1d4ed8;color:#fff;border-radius:50%;min-width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
-.od-rule{font-size:12px;color:#94a3b8;line-height:1.6;margin-bottom:6px;padding:8px 12px;background:#111827;border-radius:6px;border-left:3px solid #f59e0b}
-.od-p1{color:#f59e0b;font-weight:700}
-.od-p14{color:#38bdf8;font-weight:700}
-.od-sum{background:#0d1f38;border:1.5px solid #1e4d80;border-radius:10px;padding:12px;margin-bottom:12px}
+/* ─── WIRING DIAGRAM ─── */
+.wiring-wrap{background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px}
+.wiring-wrap h4{font-size:12px;font-weight:700;color:var(--blue-light);margin-bottom:6px}
+.wiring-wrap p{font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.5}
+.wire-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.wleg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text2)}
+.wleg-dot{width:18px;height:4px;border-radius:2px;flex-shrink:0}
+
+/* ─── ORIENTATION DIAGRAMS ─── */
+.od-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+.od-head{font-size:13px;font-weight:700;color:var(--blue-light);margin-bottom:8px;display:flex;align-items:center;gap:8px;line-height:1.4}
+.od-num{background:var(--navy-brand);color:var(--blue-light);border:1px solid var(--blue-dark);border-radius:50%;min-width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.od-rule{font-size:12px;color:var(--text2);line-height:1.65;margin-bottom:6px;padding:9px 12px;background:var(--navy-dark);border-radius:6px;border-left:3px solid var(--amber)}
+.od-p1{color:var(--amber);font-weight:700}.od-p14{color:var(--cyan);font-weight:700}
+.od-sum{background:var(--navy-dark);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px}
+
+@media(max-width:480px){
+  .card-grid,.laser-grid,.pin4-grid{grid-template-columns:1fr}
+  .rad-header{padding:12px 14px}
+  .rad-logo{height:28px}
+}
 </style>
 </head>
 <body>
-<h1>&#9889; Radiaction Pin Mapper</h1>
-<div class="sub">Detector button installation -- manufacturer button mapping</div>
+<div class="rad-header">
+  <img src="data:image/png;base64,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" alt="Radiaction Medical" class="rad-logo"/>
+  <div class="rad-header-divider"></div>
+  <div>
+    <div class="rad-app-name">Detector Button Pin Mapper</div>
+    <div class="rad-app-tag">Field Service Tool &nbsp;&#8226;&nbsp; Internal Use Only</div>
+  </div>
+</div>
+<div class="page-body">
+
 
 <!-- PH0: Connector -->
 <div id="ph0" class="phase active">
@@ -137,10 +207,10 @@ input[type=number]:focus{outline:none;border-color:#3b82f6}
   <div class="instr">Each connector serves two panels. Map each separately. All use <strong>14 pins</strong>.</div>
   <div class="card-grid">
     <div class="sel-card" onclick="startFlow('right')">
-      <h3>Right connector</h3><p>Back panel + Right panel</p><span class="tag">PCK0740-01</span>
+      <h3>&#9654; Right connector</h3><p>Back panel + Right panel</p><span class="tag">PCK0740-01</span>
     </div>
     <div class="sel-card" onclick="startFlow('left')">
-      <h3>Left connector</h3><p>Left panel + Front panel</p><span class="tag">PCK0741-01</span>
+      <h3>&#9654; Left connector</h3><p>Left panel + Front panel</p><span class="tag">PCK0741-01</span>
     </div>
   </div>
 </div>
@@ -1161,5 +1231,20 @@ window.addEventListener('load',function(){
 });
 
 </script>
+
+
+</div><!-- /page-body -->
+
+<div class="rad-footer">
+  <span>Radiaction Medical Ltd.</span> &nbsp;&bull;&nbsp; Detector Button Pin Mapper &nbsp;&bull;&nbsp; Field Service Tool &nbsp;&bull;&nbsp; Internal Use Only
+</div>
+
+</div><!-- /page-body -->
+<div class="rad-footer">
+  <img src="data:image/png;base64,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" alt="Radiaction" class="rad-footer-logo"/>
+  <div style="margin-top:6px;font-size:10px;color:#4a6490;letter-spacing:.3px">
+    &#169; Radiaction Medical Ltd. &nbsp;&#8226;&nbsp; Detector Button Pin Mapper &nbsp;&#8226;&nbsp; Internal Use Only
+  </div>
+</div>
 </body>
 </html>
