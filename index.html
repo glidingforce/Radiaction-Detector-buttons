@@ -264,10 +264,7 @@ input[type=number]:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
     </div>
     <div class="pin4-card p-dmgf">
       <h4>&#9679; DMG Far</h4>
-      <div style="display:flex;gap:6px;justify-content:center;align-items:center">
-        <input type="number" id="dmgf-inp" min="1" max="14" placeholder="?"/>
-        <button class="btn btn-ghost btn-sm" onclick="autoFillDmgFar()" title="Auto-fill from remaining pins">Auto</button>
-      </div>
+      <input type="number" id="dmgf-inp" min="1" max="14" placeholder="?"/>
     </div>
   </div>
   <div class="err" id="dmg-err"></div>
@@ -862,8 +859,8 @@ function buildConnectorDiagrams(pcb){
   }
   // pin labels
   var topY=bY2+8, botY=bY2+tot2+8;
-  var topLbl='Pin 1 (TOP)', botLbl='Pin 14 (BOTTOM)';
-  var topCol='#f59e0b', botCol='#38bdf8';
+  var topLbl='Pin '+pinCount+' (TOP)', botLbl='Pin 1 (BOTTOM)';
+  var topCol='#38bdf8', botCol='#f59e0b';
   sp+='<text x="'+(bX-4)+'" y="'+topY+'" text-anchor="end" font-size="8" font-weight="800" fill="'+topCol+'" font-family="Segoe UI,sans-serif">'+topLbl+' &#9654;</text>';
   sp+='<text x="'+(bX-4)+'" y="'+botY+'" text-anchor="end" font-size="8" font-weight="800" fill="'+botCol+'" font-family="Segoe UI,sans-serif">'+botLbl+' &#9654;</text>';
   // count arrow
@@ -1172,8 +1169,8 @@ function buildConnectorDiagrams(pcb, pinCount){
   svgB+='<text x="'+(vW/2)+'" y="62" text-anchor="middle" font-size="8" fill="#5eead4" font-family="Segoe UI,sans-serif">flat cable</text>';
   /* key notch at TOP */
   var cx=vW/2;
-  svgB+='<polygon points="'+(cx-13)+','+bY2+' '+cx+','+(bY2-14)+' '+(cx+13)+','+bY2+'" fill="#f59e0b"/>';
-  svgB+='<text x="'+cx+'" y="'+(bY2-17)+'" text-anchor="middle" font-size="9" font-weight="700" fill="#f59e0b" font-family="Segoe UI,sans-serif">&#9650; Pin 1  KEY NOTCH</text>';
+  svgB+='<polygon points="'+(cx-13)+','+(bY2+tot2+10)+' '+cx+','+(bY2+tot2+22)+' '+(cx+13)+','+(bY2+tot2+10)+'" fill="#f59e0b"/>';
+  svgB+='<text x="'+cx+'" y="'+(bY2+tot2+36)+'" text-anchor="middle" font-size="9" font-weight="700" fill="#f59e0b" font-family="Segoe UI,sans-serif">&#9660; Pin 1  KEY NOTCH</text>';
   /* housing */
   svgB+='<rect x="'+(x02-8)+'" y="'+(bY2-2)+'" width="'+(PW2+16)+'" height="'+(tot2+10)+'" rx="6" fill="#0f2744" stroke="#1e4d80" stroke-width="2"/>';
   /* direction arrow */
@@ -1183,7 +1180,7 @@ function buildConnectorDiagrams(pcb, pinCount){
   svgB+='<text x="'+(axB+10)+'" y="'+(bY2+tot2/2)+'" font-size="8" fill="#475569" font-family="Segoe UI,sans-serif" transform="rotate(90,'+(axB+10)+','+(bY2+tot2/2)+')">count direction</text>';
   /* pins: top=1, bottom=N */
   for(var i=1;i<=pinCount;i++){
-    var py=bY2+4+(i-1)*(PH2+GAP2);
+    var py=bY2+4+(pinCount-i)*(PH2+GAP2);
     var isOne=(i===1), isN=(i===pinCount);
     var bg=isOne?'#7c2d12':isN?'#1e3a5f':'#1e293b';
     var bdr=isOne?'#f59e0b':isN?'#38bdf8':'#475569';
@@ -1191,8 +1188,8 @@ function buildConnectorDiagrams(pcb, pinCount){
     var tc=isOne?'#fbbf24':isN?'#7dd3fc':'#94a3b8';
     svgB+='<rect x="'+x02+'" y="'+py+'" width="'+PW2+'" height="'+PH2+'" rx="3" fill="'+bg+'" stroke="'+bdr+'" stroke-width="'+bw+'"/>';
     svgB+='<text x="'+(x02+24)+'" y="'+(py+PH2/2+5)+'" font-size="13" font-weight="800" fill="'+tc+'" font-family="Segoe UI,sans-serif">'+i+'</text>';
-    if(isOne) svgB+='<text x="'+(x02+50)+'" y="'+(py+PH2/2+5)+'" font-size="10" fill="#f59e0b" font-family="Segoe UI,sans-serif">&#8592; Pin 1  (TOP)</text>';
-    if(isN)   svgB+='<text x="'+(x02+50)+'" y="'+(py+PH2/2+5)+'" font-size="10" fill="#38bdf8" font-family="Segoe UI,sans-serif">&#8592; Pin '+pinCount+'  (BOTTOM)</text>';
+    if(isOne) svgB+='<text x="'+(x02+50)+'" y="'+(py+PH2/2+5)+'" font-size="10" fill="#f59e0b" font-family="Segoe UI,sans-serif">&#8592; Pin 1  (BOTTOM)</text>';
+    if(isN)   svgB+='<text x="'+(x02+50)+'" y="'+(py+PH2/2+5)+'" font-size="10" fill="#38bdf8" font-family="Segoe UI,sans-serif">&#8592; Pin '+pinCount+'  (TOP)</text>';
   }
   /* cable bends */
   var bendY=bY2+tot2+14;
@@ -1203,8 +1200,8 @@ function buildConnectorDiagrams(pcb, pinCount){
 
   var cardB=document.createElement('div');
   cardB.className='od-card';
-  cardB.innerHTML='<div class="od-head"><span class="od-num">B</span>'+pcb.name+' connector (vertical &mdash; count top to bottom)</div>'
-    +'<div class="od-rule">Flat cable hangs down from PCB. <span class="od-p1">Pin 1 = TOP</span> (key notch). <span class="od-p14">Pin '+pinCount+' = BOTTOM</span>. Count top &darr; bottom. Cable bends 90&deg; to plug into machine.</div>'
+  cardB.innerHTML='<div class="od-head"><span class="od-num">B</span>'+pcb.name+' connector (vertical &mdash; count bottom to top)</div>'
+    +'<div class="od-rule">Flat cable hangs down from PCB. <span class="od-p1">Pin 1 = BOTTOM</span> (key notch). <span class="od-p14">Pin '+pinCount+' = TOP</span>. Count bottom &uarr; top. Cable bends 90&deg; to plug into machine.</div>'
     +svgB;
   el.appendChild(cardB);
 
@@ -1220,8 +1217,8 @@ function buildConnectorDiagrams(pcb, pinCount){
     +'</div>'
     +'<div style="background:#0a1f14;border-radius:8px;padding:10px;text-align:center;font-size:12px;color:#94a3b8;line-height:2">'
     +'<b style="color:#38bdf8">'+pcb.name+'</b><br>Vertical<br>'
-    +'<b style="color:#f59e0b">1</b> &uarr; TOP<br>'
-    +'<b style="color:#38bdf8">'+pinCount+'</b> &darr; BOTTOM'
+    +'<b style="color:#38bdf8">'+pinCount+'</b> &uarr; TOP<br>'
+    +'<b style="color:#f59e0b">1</b> &darr; BOTTOM'
     +'</div></div>';
   el.appendChild(sum);
 }
